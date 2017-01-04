@@ -32,7 +32,7 @@ def distribute_water(water_grid, drain, water, grid, size):
                         t = (water_grid[pos][2] - water_grid[pos + 1][2]) / 2
                         water_grid[pos + 1][2] += t
                         water_grid[pos][2] -= t
-                    if water_grid[pos][2] < water_grid[pos + 1][2]:
+                    elif water_grid[pos][2] < water_grid[pos + 1][2]:
                         t = (water_grid[pos + 1][2] - water_grid[pos][2]) / 2
                         water_grid[pos][2] += t
                         water_grid[pos + 1][2] -= t
@@ -41,10 +41,28 @@ def distribute_water(water_grid, drain, water, grid, size):
                         t = (water_grid[pos][2] - water_grid[pos + size][2]) / 2
                         water_grid[pos + size][2] += t
                         water_grid[pos][2] -= t
-                    if water_grid[pos][2] < water_grid[pos + size][2]:
+                    elif water_grid[pos][2] < water_grid[pos + size][2]:
                         t = (water_grid[pos + size][2] - water_grid[pos][2]) / 2
                         water_grid[pos][2] += t
                         water_grid[pos + size][2] -= t
+                if x > 1:
+                    if water_grid[pos][2] > water_grid[pos - 1][2]:
+                        t = (water_grid[pos][2] - water_grid[pos - 1][2]) / 2
+                        water_grid[pos - 1][2] += t
+                        water_grid[pos][2] -= t
+                    elif water_grid[pos][2] < water_grid[pos - 1][2]:
+                        t = (water_grid[pos - 1][2] - water_grid[pos][2]) / 2
+                        water_grid[pos][2] += t
+                        water_grid[pos - 1][2] -= t
+                if y > 1:
+                    if water_grid[pos][2] > water_grid[pos - size][2]:
+                        t = (water_grid[pos][2] - water_grid[pos - size][2]) / 2
+                        water_grid[pos - size][2] += t
+                        water_grid[pos][2] -= t
+                    elif water_grid[pos][2] < water_grid[pos - size][2]:
+                        t = (water_grid[pos - size][2] - water_grid[pos][2]) / 2
+                        water_grid[pos][2] += t
+                        water_grid[pos - size][2] -= t
 
 def reset_flood(water_vdata, grid, size):
     vertex = GeomVertexReader(water_vdata, 'vertex')
@@ -138,7 +156,7 @@ class InputHandler(DirectObject):
         self.floodInterval.loop()
 
 def main(inputfile):
-    size = 50
+    size = 100
     base = ShowBase()
     snode = GeomNode('land')
     grid = gen_grid(size, parse_file(inputfile))

@@ -5,9 +5,9 @@ def rain_water(water_grid, water, grid, size, rate):
         for x in range(1, size - 1):
             if random.random() > 0.995:
                 pos = y * size + x
-                water_grid[pos][2] += 0.21 * rate
-                water_grid[pos - 1][2] -= 0.1
-                water_grid[pos + 1][2] -= 0.1
+                water_grid[pos][2] += 0.81 * rate
+                water_grid[pos - 1][2] -= 0.4
+                water_grid[pos + 1][2] -= 0.4
 
 def fill_edges(water_grid, water, grid, size, rate):
     for y in range(1, size - 1):
