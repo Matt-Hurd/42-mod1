@@ -25,6 +25,14 @@ def gen_water(size):
             fx = float(x) / size * 5 - 2.5
             fy = float(y) / size * 5 - 2.5
             if y == 0 or x == 0 or y == size - 1 or x == size - 1:
+                if x == 0:
+                    fx = 1.0 / size * 5 - 2.5
+                if x == size - 1:
+                    fx = float(size - 2) / size * 5 - 2.5
+                if y == 0:
+                    fy = 1.0 / size * 5 - 2.5
+                if y == size - 1:
+                    fy = float(size - 2) / size * 5 - 2.5
                 z = -1.0
                 color.addData4f(0, 0, 0.8, 1)
             else:

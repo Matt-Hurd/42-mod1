@@ -21,38 +21,45 @@ def drain_water(water_grid, water, grid, size):
     water_grid[(size ** 2) / 2 - size / 2][2] -= 0.1
 
 def distribute_water(water_grid, drain, water, grid, size):
-    for x in range(size * size):
-        '''water_grid[x] == grid[x / size][x % size]'''
-        if (x + 1) % size != 0 and (drain or water_grid[x][2] > grid[(x + 1) / size][(x + 1) % size]):
-            if water_grid[x][2] > water_grid[x + 1][2]:
-                t = (water_grid[x][2] - water_grid[x + 1][2]) / 2
-                water_grid[x + 1][2] += t
-                water_grid[x][2] -= t
-            elif water_grid[x][2] < water_grid[x + 1][2]:
-                t = (water_grid[x + 1][2] - water_grid[x][2]) / 2
-                water_grid[x][2] += t
-                water_grid[x + 1][2] -= t
-        if x / size < size - 1 and water_grid[x][2] > grid[(x + size) / size][(x) % size]:
-            if water_grid[x][2] > water_grid[x + size][2]:
-                t = (water_grid[x][2] - water_grid[x + size][2]) / 2
-                water_grid[x + size][2] += t
-                water_grid[x][2] -= t
-            elif water_grid[x][2] < water_grid[x + size][2]:
-                t = (water_grid[x + size][2] - water_grid[x][2]) / 2
-                water_grid[x][2] += t
-                water_grid[x + size][2] -= t
+    for y in range(1, size - 1):
+        for x in range(1, size - 1):
+            pos = y * size + x
+            if water_grid[pos][2] >= grid[y][x]:
+                if x < size - 2:
+                    if water_grid[pos][2] > water_grid[pos + 1][2]:
+                        t = (water_grid[pos][2] - water_grid[pos + 1][2]) / 2
+                        water_grid[pos + 1][2] += t
+                        water_grid[pos][2] -= t
+                    elif water_grid[pos][2] < water_grid[pos + 1][2]:
+                        t = (water_grid[pos + 1][2] - water_grid[pos][2]) / 2
+                        water_grid[pos][2] += t
+                        water_grid[pos + 1][2] -= t
+                if y < size - 2:
+                    if water_grid[pos][2] > water_grid[pos + size][2]:
+                        t = (water_grid[pos][2] - water_grid[pos + size][2]) / 2
+                        water_grid[pos + size][2] += t
+                        water_grid[pos][2] -= t
+                    elif water_grid[pos][2] < water_grid[pos + size][2]:
+                        t = (water_grid[pos + size][2] - water_grid[pos][2]) / 2
+                        water_grid[pos][2] += t
+                        water_grid[pos + size][2] -= t
 
-def reset_flood(water_vdata):
+def reset_flood(water_vdata, grid, size):
     vertex = GeomVertexReader(water_vdata, 'vertex')
     vwrite = GeomVertexWriter(water_vdata, 'vertex')
     cwrite = GeomVertexWriter(water_vdata, 'color')
     water_grid = []
+    pos = 0
     while not vertex.isAtEnd():
         v = vertex.getData3f()
         water_grid.append([v[0], v[1], v[2]])
     for v in water_grid:
-        vwrite.setData3f(v[0], v[1], -0.1)
+        if pos < size or pos / size >= size - 1 or pos % size == 0 or pos % size == size - 1:
+            vwrite.setData3f(v[0], v[1], -0.1)
+        else:
+            vwrite.setData3f(v[0], v[1], grid[pos % size][pos / size] - 0.01)
         cwrite.addData4f(0, 0, 0.8, 0)
+        pos += 1
 
 def handle_flood(flood_type, water_vdata, water, grid, size):
     vertex = GeomVertexReader(water_vdata, 'vertex')
@@ -76,7 +83,7 @@ def handle_flood(flood_type, water_vdata, water, grid, size):
         if (v[2] > 0):
             cwrite.addData4f(0, 0, 0.8, 1)
         else:
-            cwrite.addData4f(0, 0, 0.8, 0)
+            cwrite.addData4f(0, 0, 0.8, 1)
 
 class InputHandler(DirectObject):
     def __init__(self, water_vdata, water, grid, size):
@@ -106,7 +113,7 @@ class InputHandler(DirectObject):
     def stop(self):
         if self.floodInterval:
             self.floodInterval.finish()
-        reset_flood(self.water_vdata)
+        reset_flood(self.water_vdata, self.grid, self.size)
 
     def drain(self):
         if self.floodInterval:
@@ -116,14 +123,15 @@ class InputHandler(DirectObject):
         self.floodInterval.loop()
 
 def main(inputfile):
-    size = 50
+    size = 100
     base = ShowBase()
     snode = GeomNode('land')
     grid = gen_grid(size, parse_file(inputfile))
     add_border(size, grid)
-    snode.addGeom(land_from_grid(grid, size + 4))
+    size += 4
+    snode.addGeom(land_from_grid(grid, size))
     land = render.attachNewNode(snode)
-    land.setScale(1.02)
+    # land.setScale(1.02)
 
     snode = GeomNode('water')
     water_vdata = None
