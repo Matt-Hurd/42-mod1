@@ -16,6 +16,9 @@ def fill_edges(water_grid, water, grid, size, rate):
                 water_grid[x + y * size][2] = max(grid[y][x], water_grid[x + y * size][2]) + 0.003 * rate
 
 
+def fill_center(water_grid, water, grid, size, rate):
+    water_grid[(size ** 2) / 2 + size / 2][2] =  1 * rate
+
 def add_water(water_grid, water, grid, size, rate):
     for x in range(size - 2):
         water_grid[x + size + 1][2] = max(grid[1][x + 1], water_grid[x + size + 1][2]) + 0.01 * rate
