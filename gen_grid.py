@@ -9,21 +9,6 @@ def normalize_input(input):
         newarray.append([(float(x)/20000, float(y)/20000, float(z)/5000) for x, y, z in group])
     return newarray
 
-# def find_len(origin, point):
-#     ox, oy, oz = origin
-#     x, y = point
-#     x_int = None
-#     y_int = None
-#     slope = None
-#     if (x - ox) != 0:
-#         slope = float((y - oy)) / (x - ox)
-#
-#     if slope != 0:
-#         x_int = (slope * x - y) / slope
-#     if slope != None:
-#         y_int = y - slope * x
-#     l = None
-
 def gen_mountain(size, grid, point, origin, depth):
     if depth > sys.getrecursionlimit() - 10:
         return
@@ -67,44 +52,10 @@ def gen_group(group, size, grid):
                         gen_mountain(size, grid, (int(i), int(y * size)), (i / size, y, z), 0)
                         i += 1
 
-# def gen_group(size, grid, group, point, depth):
-#     x, y = point
-#     if grid[y][x] > 0 or depth > sys.getrecursionlimit() - 10:
-#         return
-#     # print y, x
-#     dists = []
-#     for p in group:
-#         px, py, pz = p
-#         dists.append(numpy.linalg.norm(numpy.array((x, y)) - numpy.array((px * size, py * size))))
-#     total = 0.0
-#     weight = 0.0
-#     biggest_dist = max(dists)
-#     # t = sorted(dists)
-#     for i in range(len(dists)):
-#         total += (biggest_dist - dists[i]) * group[i][2]
-#         weight += biggest_dist - dists[i]
-#     weight += size
-#     # print total / weight
-#     grid[y][x] = total / weight
-#     if total / weight == 0:
-#         return
-#     for i in range(-1, 2):
-#         for u in range(-1, 2):
-#             if (not (i == 0 and u == 0)) and (x - i >= 0 and x - i < size and y - u >= 0 and y - u < size):
-#                 newdists = []
-#                 for p in group:
-#                     px, py, pz = p
-#                     newdists.append(numpy.linalg.norm(numpy.array((x - i, y - u)) - numpy.array((px * size, py * size))))
-#                 good = 0
-#                 for d in range(len(newdists)):
-#                     if newdists[d] < dists[d] - 0.7:
-#                         # print newdists[d], dists[d]
-#                         good = 1
-#                 if good:
-#                     gen_group(size, grid, group, (x - i, y - u), depth + 1)
-
 def gen_grid(size, input):
     normal = normalize_input(input)
+    if len(normal) == 1 and len(normal[0]) == 1:
+        normal[0][0] = (0.5, 0.5, 1.1)
     grid = []
     for x in range(size):
         t = []

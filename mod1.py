@@ -94,7 +94,7 @@ def handle_flood(flood_type, water_vdata, water, grid, size, rate):
     if flood_type == 1:
         add_water(water_grid, water, grid, size, rate)
     if flood_type == 2:
-        add_water(water_grid, water, grid, size, rate)
+        fill_edges(water_grid, water, grid, size, rate)
     if flood_type == 3:
         fill_center(water_grid, water, grid, size, rate)
     if flood_type == '-':
@@ -165,7 +165,7 @@ class InputHandler(DirectObject):
         self.floodInterval.loop()
 
 def main(inputfile):
-    size = 100
+    size = 60
     base = ShowBase()
     snode = GeomNode('land')
     grid = gen_grid(size, parse_file(inputfile))
@@ -186,6 +186,12 @@ def main(inputfile):
     land.setTwoSided(True)
     t = InputHandler(water_vdata, water, grid, size)
     base.trackball.node().setPos(0, 20, -0.5)
+
+    sky = loader.loadModel("models/solar_sky_sphere")
+    sky_tex = loader.loadTexture("models/stars_1k_tex.jpg")
+    sky.setTexture(sky_tex, 1)
+    sky.reparentTo(render)
+    sky.setScale(40)
     inputsDisplay = OnscreenText(text="1: Rain\n2: Wave\n3: Edges\n4: Center\n0: Reset\n-: Drain\nq: Increase Rate\nw: Decrease Rate",
                                style=1, fg=(1, 1, 1, 1), pos=(0.06, -0.08),
                                align=TextNode.ALeft, scale=.05,
