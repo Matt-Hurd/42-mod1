@@ -64,7 +64,11 @@ def distribute_water(water_grid, drain, water, grid, size):
                         water_grid[pos][2] += t
                         water_grid[pos - size][2] -= t
 
+count = 0
+
 def reset_flood(water_vdata, grid, size):
+    global count
+    count = 0
     vertex = GeomVertexReader(water_vdata, 'vertex')
     vwrite = GeomVertexWriter(water_vdata, 'vertex')
     cwrite = GeomVertexWriter(water_vdata, 'color')
@@ -82,6 +86,8 @@ def reset_flood(water_vdata, grid, size):
         pos += 1
 
 def handle_flood(flood_type, water_vdata, water, grid, size, rate):
+    global count
+    count += 1
     vertex = GeomVertexReader(water_vdata, 'vertex')
     vwrite = GeomVertexWriter(water_vdata, 'vertex')
     cwrite = GeomVertexWriter(water_vdata, 'color')
@@ -92,7 +98,7 @@ def handle_flood(flood_type, water_vdata, water, grid, size, rate):
     if flood_type == 0:
         rain_water(water_grid, water, grid, size, rate)
     if flood_type == 1:
-        add_water(water_grid, water, grid, size, rate)
+        add_water(water_grid, water, grid, size, rate, count)
     if flood_type == 2:
         fill_edges(water_grid, water, grid, size, rate)
     if flood_type == 3:
