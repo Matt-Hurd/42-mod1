@@ -18,4 +18,4 @@ def parse_file(inputfile):
             return points
     except IOError as e:
         print "Invalid input file"
-        return None
+        exit()

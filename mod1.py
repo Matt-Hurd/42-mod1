@@ -15,7 +15,7 @@ from gen_grid import gen_grid, add_border
 from parse_file import parse_file
 from generate_models import gen_water, land_from_grid
 from color_point import color_point
-from add_water import rain_water, add_water, fill_edges, fill_center
+from add_water import rain_water, add_water, fill_edges, fill_center, fill_whirlpool
 
 def drain_water(water_grid, water, grid, size):
     for y in range(1, size - 1):
@@ -103,6 +103,8 @@ def handle_flood(flood_type, water_vdata, water, grid, size, rate):
         fill_edges(water_grid, water, grid, size, rate)
     if flood_type == 3:
         fill_center(water_grid, water, grid, size, rate)
+    if flood_type == 4:
+        fill_whirlpool(water_grid, water, grid, size, rate, count)
     if flood_type == '-':
         drain_water(water_grid, water, grid, size)
     distribute_water(water_grid, 0, water, grid, size)
@@ -125,6 +127,7 @@ class InputHandler(DirectObject):
         self.accept("2", self.flood)
         self.accept("3", self.edges)
         self.accept("4", self.center)
+        self.accept("5", self.whirlpool)
         self.accept("0", self.stop)
         self.accept("-", self.drain)
         self.accept("q", self.modify_rate, [0.2])
@@ -155,6 +158,12 @@ class InputHandler(DirectObject):
     def center(self):
         self.stop()
         self.floodInterval = Func(handle_flood, 3, self.water_vdata, self.water, self.grid, self.size, self.rate)
+        self.floodInterval.start()
+        self.floodInterval.loop()
+
+    def whirlpool(self):
+        self.stop()
+        self.floodInterval = Func(handle_flood, 4, self.water_vdata, self.water, self.grid, self.size, self.rate)
         self.floodInterval.start()
         self.floodInterval.loop()
 
@@ -198,7 +207,7 @@ def main(inputfile):
     sky.setTexture(sky_tex, 1)
     sky.reparentTo(render)
     sky.setScale(40)
-    inputsDisplay = OnscreenText(text="1: Rain\n2: Wave\n3: Edges\n4: Center\n0: Reset\n-: Drain\nq: Increase Rate\nw: Decrease Rate",
+    inputsDisplay = OnscreenText(text="1: Rain\n2: Wave\n3: Edges\n4: Center\n5: Whirlpools\n0: Reset\n-: Drain\nq: Increase Rate\nw: Decrease Rate",
                                style=1, fg=(1, 1, 1, 1), pos=(0.06, -0.08),
                                align=TextNode.ALeft, scale=.05,
                                parent=base.a2dTopLeft)

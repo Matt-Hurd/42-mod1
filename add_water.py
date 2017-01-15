@@ -22,4 +22,19 @@ def fill_center(water_grid, water, grid, size, rate):
 def add_water(water_grid, water, grid, size, rate, pos):
     if pos / 10 < size - 4:
         for x in range(size - 2):
-            water_grid[x + size * (pos / 10 + 1) + 1][2] = rate
+            water_grid[x + size * (pos / 10 + 1) + 1][2] = rate * 1.1
+
+def fill_whirlpool(water_grid, water, grid, size, rate, pos):
+    pos *= 11
+    pos %= (size - 4) * 2
+    if pos < size - 4:
+        water_grid[size * 2 + size - 2 - pos][2] += rate * 1.1
+        water_grid[size * (size - 2) + pos + 2][2] += rate * 1.1
+    elif pos < (size - 4) * 2:
+        pos %= (size - 4)
+        water_grid[2 + (pos + 2) * size][2] += rate * 1.1
+        water_grid[2 - (pos + 2) * size + size - 4][2] += rate * 1.1
+    water_grid[size * (size - 1) / 2][2] = 0
+    water_grid[size * (size) / 2 - 1][2] = 0
+    water_grid[size * (size) / 2][2] = 0
+    water_grid[size * (size - 1) / 2 - 1][2] = 0
